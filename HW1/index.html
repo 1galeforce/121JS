@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+</head>
+<body>
+    <h1>Student Profile</h1>
+    <p id="profile"></p>
+
+    <script>
+      // Define variables
+const firstName = "Gale";
+const lastName = "Erie";
+const yearsOfStudy = 1.5;
+const goal = "work as a software developer";
+
+// Combine variables into a profile message
+const profileMessage = `My name is ${firstName} ${lastName}. I have been at SCC for approximately ${yearsOfStudy} years and plan to ${goal} after completing my coursework.`;
+
+// Output the profile to the HTML element with id "profile"
+document.getElementById('profile').textContent = profileMessage;
+    </script>
+</body>
+</html>
