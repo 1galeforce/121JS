@@ -1,3 +1,6 @@
+// Name: Gale Erie
+// Author: Gale Erie
+// Date: January 19, 2025
 // Function to translate a word to Pig Latin
 function translateToPigLatin(word) {
     // Function to check if a character is a vowel
