@@ -1,0 +1,43 @@
+/* Indent the entire body by 1 inch */
+body {
+    margin-left: 1in;
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff; /* Light blue background */
+    color: #333; /* Dark text color for better readability */
+}
+
+/* Style for the main heading */
+h1 {
+    text-align: center;
+    color: #0056b3; /* Dark blue color */
+}
+
+/* Style for the table and cells */
+table {
+    width: 80%;
+    margin: 20px auto; /* Center the table */
+    border-collapse: collapse;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); /* Add shadow for a 3D effect */
+}
+
+th, td {
+    border: 1px solid #ccc; /* Light gray border */
+    padding: 12px;
+    text-align: center;
+}
+
+th {
+    background-color: #0056b3; /* Dark blue background for table header */
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9; /* Light gray background for even rows */
+}
+
+/* Style for the summary paragraph */
+#summary {
+    text-align: center;
+    font-size: 1.2em;
+    margin-top: 20px;
+}
