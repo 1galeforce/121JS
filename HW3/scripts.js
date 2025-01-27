@@ -1,3 +1,6 @@
+// Name: G. Erie
+// Author: G. Erie
+// Date: January 26, 2025
 const grades = "jim|25, sue|32, mary|34, ann|22, ted|28, frank|15, lisa|19, mike|30, ahn|26, vishaya|27";
 
 // Split the string into an array of students
