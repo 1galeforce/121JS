@@ -1,0 +1,73 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f8ff;
+    margin: 0;
+    padding: 20px;
+}
+h1 {
+    text-align: center;
+    color: #333;
+}
+#buttons {
+    margin-bottom: 20px;
+    text-align: center;
+}
+.house-btn {
+    padding: 10px 15px;
+    margin: 5px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.house-btn:hover {
+    background-color: #333;
+}
+.house-btn[data-house="Gryffindor"] {
+    background-color: #ff6347;
+}
+.house-btn[data-house="Hufflepuff"] {
+    background-color: #ffd700;
+}
+.house-btn[data-house="Ravenclaw"] {
+    background-color: #1e90ff;
+}
+.house-btn[data-house="Slytherin"] {
+    background-color: #32cd32;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+th {
+    background-color: #333;
+    color: white;
+}
+tr:nth-child(even) {
+    background-color: #e6e6fa; /* Light lavender color for even rows */
+}
+tr:nth-child(odd) {
+    background-color: #fafad2; /* Light goldenrod color for odd rows */
+}
+tr:hover {
+    background-color: #ddd;
+}
+#reset {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#reset:hover {
+    background-color: #555;
+}

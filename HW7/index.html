@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harry Potter Characters</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #buttons {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .house-btn {
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .house-btn:hover {
+            background-color: #333;
+        }
+        .house-btn[data-house="Gryffindor"] {
+            background-color: #ff6347;
+        }
+        .house-btn[data-house="Hufflepuff"] {
+            background-color: #ffd700;
+        }
+        .house-btn[data-house="Ravenclaw"] {
+            background-color: #1e90ff;
+        }
+        .house-btn[data-house="Slytherin"] {
+            background-color: #32cd32;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #333;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #e6e6fa; /* Light lavender color for even rows */
+        }
+        tr:nth-child(odd) {
+            background-color: #fafad2; /* Light goldenrod color for odd rows */
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        #reset {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #reset:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Harry Potter Characters</h1>
+    <div id="buttons"></div>
+    <table border='1'>
+        <thead>
+            <tr>
+                <th>name</th>
+                <th>role</th>
+                <th>house</th>
+                <th>gender</th>
+                <th>alignment</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <button id="reset">reset</button>
+
+    <script>
+        // This script uses ES6 syntax
+        // list of characters
+        let characters = [
+            {name:"Albus Dumbledore", role:"staff", house:"Gryffindor", gender:"m", alignment:"good"},    
+            {name:"Nymphadora Tonks", role:"", house:"Hufflepuff", gender:"f", alignment:"good"},    
+            {name:"Ron Weasley", role:"student", house:"Gryffindor", gender:"m", alignment:"good"},    
+            {name:"Ginny Weasley", role:"student", house:"Gryffindor", gender:"f", alignment:"good"},    
+            {name:"Hermione Granger", role:"student", house:"Gryffindor", gender:"f", alignment:"good"},    
+            {name:"Mad-eye Moody", role:"staff", house:"", gender:"m", alignment:"good"},    
+            {name:"Prof McGonagall", role:"staff", house:"Gryffindor", gender:"f", alignment:"good"},    
+            {name:"Harry Potter", role:"student", house:"Gryffindor", gender:"m", alignment:"good"},    
+            {name:"Draco Malfoy", role:"student", house:"Slytherin", gender:"m", alignment:"evil"},    
+            {name:"Hagrid", role:"staff", house:"Gryffindor", gender:"m", alignment:"good"},    
+            {name:"Luna Lovegood", role:"student", house:"Ravenclaw", gender:"f", alignment:"good"},    
+            {name:"Voldemort", role:"", house:"Slytherin", gender:"m", alignment:"evil"},    
+            {name:"Bellatrix Lestrange", role:"", house:"Slytherin", gender:"f", alignment:"evil"},           
+            {name:"Severus Snape", role:"staff", house:"Slytherin", gender:"m", alignment:"?"}
+        ];
+
+        // Wait for the document to be fully loaded
+        $(document).ready(function() {
+            // Get unique house names from the character list
+            const houses = [...new Set(characters.map(c => c.house))]; 
+            houses.forEach(house => {
+                // Add a button for each house
+                $('#buttons').append(`<button class="house-btn" data-house="${house}">${house || "No House"}</button>`);
+            });
+            // Display all characters in the table initially
+            updateTable(characters);
+            
+            // Add a click event listener to each house button
+            $('.house-btn').click(function() {
+                // Get the house name from the button's data attribute
+                const selectedHouse = $(this).data('house');
+                // Filter characters by the selected house
+                const filteredCharacters = characters.filter(c => c.house === selectedHouse);
+                // Update the table with the filtered characters
+                updateTable(filteredCharacters);
+            });
+            
+            // Add a click event listener to the reset button
+            $('#reset').click(function() {
+                // Reset the table to show all characters
+                updateTable(characters);
+            });
+            
+            // Function to update the table with a list of characters
+            function updateTable(characters) {
+                // Clear the current table body
+                $('tbody').empty();
+                characters.forEach((character, index) => {
+                    // Add a new row for each character
+                    $('tbody').append(`
+                        <tr>
+                            <td>${character.name}</td>
+                            <td>${character.role}</td>
+                            <td>${character.house || "No House"}</td>
+                            <td>${character.gender}</td>
+                            <td>${character.alignment}</td>
+                        </tr>
+                    `);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
