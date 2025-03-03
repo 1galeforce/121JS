@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>5-Day Weather Forecast</title>
+    <!-- Favicon link -->
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <!-- Theme color meta tag -->
+    <meta name="theme-color" content="#77aec9">
+
+    <!-- jQuery library included -->
+    <script
+        src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+    <style>
+        /* Basic styling for the body */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #83a4d4, #b6fbff);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        /* Styling for the heading */
+        h3 {
+            color: #fff;
+            text-align: center;
+            background-color: #5c8e97;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        /* Styling for the form */
+        form {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        /* Styling for inputs, selects, and buttons */
+        input, select, button {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        /* Styling for buttons */
+        button {
+            background-color: #1e9ddd;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4583a0;
+        }
+        /* Styling for the forecast container */
+        .forecast {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        /* Styling for each forecast day */
+        .forecast-day {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 200px;
+            text-align: center;
+        }
+        /* Styling for forecast day images */
+        .forecast-day img {
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+    
+</head>
+<body>
+    <h3>5-Day Weather Forecast</h3>
+    <hr>
+    <form id="weatherForm">
+        City: <input type="text" id="city" name="city" required>
+        <br>
+        Or ZIP Code: <input type="text" id="zip" name="zip">
+        <br>
+        <div id="citySelectDiv" style="display: none;">
+            <label for="citySelect">Select the correct city:</label>
+            <select id="citySelect"></select>
+        </div>
+        <button type="button" id="submitButton">Submit</button>
+    </form>
+    <div id="forecast"></div>
+
+    <script>
+        const apiKey = '0064402c5add9439f571da751295df69'; // Replace with OpenWeather API Key
+    
+        // Function to convert temperature from Kelvin to Fahrenheit
+        const kelvinToF = value => (((Number(value) - 273.15) * 9) / 5 + 32).toFixed(2);
+    
+        // Handle form submission
+        const handleFormSubmit = async () => {
+            const city = $('#city').val().trim();
+            const zip = $('#zip').val().trim();
+            $('#forecast').html(''); // Clear previous results
+            $('#citySelectDiv').hide(); // Hide the city selection dropdown by default
+    
+            // Validate input fields
+            if (!city && !zip) {
+                $('#forecast').html('<p>Please provide a city or zip code.</p>');
+                return;
+            }
+    
+            if (city && !isNaN(city)) {
+                $('#forecast').html('<p>City names cannot be numeric.</p>');
+                return;
+            }
+    
+            // Determine the API URL based on provided input
+            let locationDataUrl = zip
+                ? `https://api.openweathermap.org/geo/1.0/zip?zip=${zip},US&appid=${apiKey}`
+                : `https://api.openweathermap.org/geo/1.0/direct?q=${city},us&limit=5&appid=${apiKey}`;
+    
+            // Fetch location data
+            try {
+                const locationData = await fetch(locationDataUrl);
+                const locationJson = await locationData.json();
+    
+                // Check if location data is valid
+                if (!locationJson || locationJson.length === 0) {
+                    $('#forecast').html('<p>Location not found. Please try again.</p>');
+                    return;
+                }
+    
+                // Prompt to select the correct city if multiple cities are found
+                if (locationJson.length > 1 && !zip) {
+                    let cityOptions = '<option value="">Select City</option>';
+                    locationJson.forEach(location => {
+                        const cityState = `${location.name}, ${location.state}`;
+                        cityOptions += `<option value="${location.lat},${location.lon}" data-city="${location.name}" data-state="${location.state}">${cityState}</option>`;
+                    });
+                    $('#citySelectDiv').show();
+                    $('#citySelect').html(cityOptions);
+                    return;
+                }
+    
+                // Get latitude and longitude from location data
+                const { lat, lon, name, state } = locationJson.lat ? { ...locationJson, name: locationJson.name, state: locationJson.state } : { ...locationJson[0], name: locationJson[0].name, state: locationJson[0].state };
+                await getForecast(lat, lon, name, state);
+    
+                // Clear input fields after successful form submission
+                clearInputFields();
+    
+            } catch (error) {
+                $('#forecast').html('<p>Error fetching data. Please try again.</p>');
+            }
+        };
+    
+        // Function to clear input fields
+        const clearInputFields = () => {
+            $('#city').val('');
+            $('#zip').val('');
+        };
+    
+        // Event listener for form submit button
+        $('#submitButton').on('click', handleFormSubmit);
+    
+        // Event listener for city selection dropdown
+        $('#citySelect').on('change', async () => {
+            const selectedOption = $('#citySelect').find('option:selected');
+            const latLon = selectedOption.val();
+            const city = selectedOption.data('city');
+            const state = selectedOption.data('state');
+    
+            if (!latLon) {
+                $('#forecast').html('<p>Please select a city.</p>');
+                return;
+            }
+    
+            const [lat, lon] = latLon.split(',');
+            await getForecast(lat, lon, city, state);
+            clearInputFields();
+        });
+    
+        // Handle enter key press in the city input field and zip input field
+        $('#city, #zip').on('keypress', async (e) => {
+            if (e.which === 13) { // Enter key pressed
+                await handleFormSubmit();
+            }
+        });
+    
+        // Fetch weather forecast data based on latitude and longitude
+        async function getForecast(lat, lon, city, state) {
+            const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+            try {
+                const forecastData = await fetch(forecastUrl);
+                const forecastJson = await forecastData.json();
+    
+                // Check if forecast data is available
+                if (!forecastJson || !forecastJson.list || forecastJson.list.length === 0) {
+                    $('#forecast').html('<p>No forecast data available. Please try again.</p>');
+                    return;
+                }
+    
+                // Build the forecast HTML content
+                let forecastHtml = `<h4>5-Day Forecast for ${city}, ${state}</h4><div class='forecast'>`;
+                forecastJson.list.forEach((item, index) => {
+                    if (index % 8 === 0) { // Every 8th item corresponds to a new day
+                        const date = new Date(item.dt * 1000);
+                        const dateTimeString = date.toLocaleString(); // Format date and time
+                        const tempMinF = kelvinToF(item.main.temp_min);
+                        const tempMaxF = kelvinToF(item.main.temp_max);
+                        const humidity = item.main.humidity;
+                        const description = item.weather[0].description;
+                        const icon = item.weather[0].icon;
+    
+                        forecastHtml += `
+                            <div class="forecast-day">
+                                <p><strong>Date & Time:</strong> ${dateTimeString}</p>
+                                <p><strong>Min Temp:</strong> ${tempMinF} °F</p>
+                                <p><strong>Max Temp:</strong> ${tempMaxF} °F</p>
+                                <p><strong>Humidity:</strong> ${humidity}%</p>
+                                <p><strong>Weather:</strong> ${description}</p>
+                                <img src="https://openweathermap.org/img/w/${icon}.png" alt="Weather icon">
+                            </div>
+                        `;
+                    }
+                });
+                forecastHtml += "</div>";
+    
+                $('#forecast').html(forecastHtml);
+            } catch (error) {
+                $('#forecast').html('<p>Error fetching data. Please try again.</p>');
+            }
+        }
+    </script>
+    
+</body>
+</html>
+
+
