@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Night Scene</title>
+</head>
+<body>
+    <!-- The HTML5 <canvas> object used for 2D drawing -->
+    <canvas id="nightCanvas" width="1000" height="700" style="border:1px solid #000;"></canvas>
+
+    <script>
+        // Select the <canvas> object and set up the 2D drawing context
+        const canvas = document.getElementById('nightCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let moonX = 0; // Starting X position of the animated moon
+        let moonY = 150; // Fixed Y position of the animated moon
+
+        // Function to draw the night sky and stars
+        function drawSky() {
+            // Fill the entire canvas with a black rectangle for the night sky
+            ctx.fillStyle = "#000000"; // Fill style for the sky
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Add random stars using small arcs (circles)
+            for (let i = 0; i < 100; i++) {
+                const starX = Math.random() * canvas.width;
+                const starY = Math.random() * canvas.height;
+                const starSize = Math.random() * 2; // Random star size
+                ctx.beginPath(); // Begin path for each star
+                ctx.arc(starX, starY, starSize, 0, Math.PI * 2); // Draw star as an arc
+                ctx.fillStyle = "#FFFFFF"; // Fill style for stars (white)
+                ctx.fill(); // Apply the fill style
+                ctx.closePath(); // Close the path
+            }
+        }
+
+        // Function to draw a crescent moon with a radial gradient
+        function drawCrescentMoon(x, y) {
+            // Create a radial gradient for the moon
+            const gradient = ctx.createRadialGradient(x, y, 20, x, y, 50);
+            gradient.addColorStop(0, "#FFD700"); // Gold at the center
+            gradient.addColorStop(1, "#FFA500"); // Orange at the edge
+
+            // Draw the main circle for the moon using the gradient fill style
+            ctx.beginPath();
+            ctx.arc(x, y, 50, 0, Math.PI * 2, false); // Full circle
+            ctx.fillStyle = gradient; // Apply gradient fill style
+            ctx.fill(); // Fill the circle
+            ctx.closePath();
+
+            // Cut out the crescent shape by overlaying another circle
+            ctx.beginPath();
+            ctx.arc(x + 25, y, 50, 0, Math.PI * 2, true); // Overlay circle
+            ctx.fillStyle = "#000000"; // Match the sky color for cutout
+            ctx.fill(); // Fill the overlay
+            ctx.closePath();
+        }
+
+        // Function to draw a beach using lines and bezier curves
+        function drawBeach() {
+            ctx.beginPath(); // Start the beach path
+            ctx.moveTo(0, canvas.height - 200); // Starting point at the bottom left
+            ctx.bezierCurveTo(200, canvas.height - 150, 400, canvas.height - 250, 600, canvas.height - 200); // Curved shape for the beach
+            ctx.lineTo(canvas.width, canvas.height - 200); // Line to bottom right edge
+            ctx.lineTo(canvas.width, canvas.height); // Line to bottom right corner
+            ctx.lineTo(0, canvas.height); // Line back to bottom left corner
+            ctx.closePath(); // Complete the beach path
+
+            // Create a gradient fill style for the beach
+            const gradient = ctx.createLinearGradient(0, canvas.height - 200, 0, canvas.height);
+            gradient.addColorStop(0, "#F4E7D1"); // Lighter sand color at top
+            gradient.addColorStop(1, "#E2C497"); // Darker sand color at bottom
+            ctx.fillStyle = gradient; // Apply gradient fill style
+            ctx.fill(); // Fill the beach shape
+
+            // Add more noise for sand texture
+            for (let i = 0; i < 50000; i++) {
+                const x = Math.random() * canvas.width;
+                const y = canvas.height - 200 + Math.random() * 200;
+                const alpha = Math.random() * 0.5;
+                ctx.fillStyle = `rgba(229, 194, 152, ${alpha})`;
+                ctx.fillRect(x, y, 1, 1);
+            }
+        }
+
+        // Function to draw waves on the water
+        function drawWaves() {
+            ctx.strokeStyle = "#1E90FF"; // Stroke style for waves (blue)
+            ctx.lineWidth = 2; // Line width for waves
+
+            const waveHeight = 20; // Height of the waves
+            const waveFrequency = 50; // Distance between wave peaks
+
+            for (let i = 400; i < canvas.height - 200; i += 20) { // Waves span the water area
+                ctx.beginPath(); // Start a new path for each wave line
+                ctx.moveTo(0, i); // Start each wave at the left edge
+
+                for (let j = 0; j < canvas.width; j += waveFrequency) {
+                    // Create a wavy line using quadratic curves
+                    const randomHeight = Math.random() * waveHeight - (waveHeight / 2); // Slight randomness
+                    ctx.quadraticCurveTo(j + waveFrequency / 2, i - waveHeight + randomHeight, j + waveFrequency, i);
+                }
+                ctx.stroke(); // Draw the wave line
+                ctx.closePath(); // Close the wave path
+            }
+        }
+
+        // Function to draw the beach umbrella
+        function drawBeachUmbrella() {
+            const umbrellaX = 500;
+            const umbrellaY = canvas.height - 50; // Move umbrella downward
+            const umbrellaWidth = 150; // Larger canopy
+            const umbrellaHeight = 130; // Slightly longer pole
+            const stripeWidth = 20; // Width of the stripes
+
+            // Draw the umbrella pole
+            ctx.save(); // Save the current state of the context
+            ctx.translate(umbrellaX, umbrellaY);
+            ctx.rotate(30 * Math.PI / 180); // Rotate the pole by a total of 30 degrees to the right
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -umbrellaHeight);
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#8B4513"; // Brown color for the pole
+            ctx.stroke();
+            ctx.closePath();
+
+            // Draw the umbrella canopy
+            ctx.translate(0, -umbrellaHeight); // Move the origin to the top of the pole
+            ctx.rotate(Math.PI); // Rotate the canopy 180 degrees
+            ctx.beginPath();
+            ctx.moveTo(0, 0); // Start at the top of the pole
+            ctx.lineTo(-umbrellaWidth / 2, -umbrellaWidth / 2);
+            ctx.lineTo(umbrellaWidth / 2, -umbrellaWidth / 2);
+            ctx.closePath();
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fill();
+            for (let i = 0; i < umbrellaWidth; i += stripeWidth) {
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(-umbrellaWidth / 2 + i, -umbrellaWidth / 2);
+                ctx.lineTo(-umbrellaWidth / 2 + i + stripeWidth, -umbrellaWidth / 2);
+                ctx.closePath();
+                ctx.fillStyle = i % (stripeWidth * 2) === 0 ? "#FF0000" : "#FFFFFF"; // Red and white stripes
+                ctx.fill();
+            }
+            ctx.restore(); // Restore the previous state of the context
+        }
+
+        // Function to draw all static elements (sky, stars, beach, waves, umbrella)
+        function drawStaticElements() {
+            drawSky(); // Draw the static night sky
+            drawBeach(); // Draw the static beach
+            drawWaves(); // Draw the static waves
+            drawBeachUmbrella(); // Draw the static beach umbrella
+        }
+
+        // Function to draw the animated scene (moon movement)
+        function drawScene() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous frame
+            drawStaticElements(); // Draw static elements
+            drawCrescentMoon(moonX, moonY); // Draw the animated crescent moon
+
+            // Animate moon movement along an arc
+            moonX += 2; // Increment moon's X position
+            moonY = 150 + 100 * Math.sin(moonX * Math.PI / 400); // Calculate Y position for arc
+
+            if (moonX > canvas.width) {
+                moonX = 0; // Reset moon's position when it moves off screen
+            }
+        }
+
+        // Draw static elements once initially
+        drawStaticElements();
+
+        // Use animation by re-running the drawing commands at set intervals
+        setInterval(drawScene, 50); // Update the scene every 50ms
+    </script>
+</body>
+</html>
